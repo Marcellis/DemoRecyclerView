@@ -15,14 +15,15 @@
  */
 package com.example.android.recyclerview
 
+import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.android.recyclerview.GreenAdapter.NumberViewHolder
+import com.example.android.recyclerview.databinding.NumberListItemBinding
 
 /**
  * We couldn't come up with a good name for this class. Then, we realized
@@ -36,13 +37,69 @@ import com.example.android.recyclerview.GreenAdapter.NumberViewHolder
  * If you don't like our puns, we named this Adapter GreenAdapter because its
  * contents are green.
  */
-class GreenAdapter
-/**
- * Constructor for GreenAdapter that accepts a number of items to display and the specification
- * for the ListItemClickListener.
- *
- * @param numberOfItems Number of items to display in list
- */(private val mNumberItems: Int) : RecyclerView.Adapter<NumberViewHolder>() {
+open class GreenAdapter(private val mNumberItems: Int) :
+    RecyclerView.Adapter<GreenAdapter.ViewHolder>() {
+
+    /*
+    * The number of ViewHolders that have been created. Typically, you can figure out how many
+    * there should be by determining how many list items fit on your screen at once and add 2 to 4
+    * to that number. That isn't the exact formula, but will give you an idea of how many
+    * ViewHolders have been created to display any given RecyclerView.
+    *
+    * Here's some ASCII art to hopefully help you understand:
+    *
+    *    ViewHolders on screen:
+    *
+    *        *-----------------------------*
+    *        |         ViewHolder index: 0 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 1 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 2 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 3 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 4 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 5 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 6 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 7 |
+    *        *-----------------------------*
+    *
+    *    Extra ViewHolders (off screen)
+    *
+    *        *-----------------------------*
+    *        |         ViewHolder index: 8 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 9 |
+    *        *-----------------------------*
+    *        |         ViewHolder index: 10|
+    *        *-----------------------------*
+    *        |         ViewHolder index: 11|
+    *        *-----------------------------*
+    *
+    *    Total number of ViewHolders = 11
+    */
+    private var viewHolderCount = 0
+
+    /**
+     * Cache of the children views for a list item.
+     */
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        private val binding = NumberListItemBinding.bind(itemView)
+
+        // Will display which ViewHolder is displaying this data
+        var viewHolderIndex: TextView = binding.tvViewHolderInstance
+
+        fun bind(listIndex: Int) {
+            binding.tvItemNumber.text = listIndex.toString()
+        }
+    }
+
+
     /**
      *
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
@@ -55,19 +112,23 @@ class GreenAdapter
      * for more details.
      * @return A new NumberViewHolder that holds the View for each list item
      */
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): NumberViewHolder {
+    @SuppressLint("SetTextI18n")
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val context = viewGroup.context
         val layoutIdForListItem = R.layout.number_list_item
         val inflater = LayoutInflater.from(context)
         val shouldAttachToParentImmediately = false
         val view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately)
-        val viewHolder = NumberViewHolder(view)
+        val viewHolder = ViewHolder(view)
         viewHolder.viewHolderIndex.text = "ViewHolder index: $viewHolderCount"
-        val backgroundColorForViewHolder = ColorUtils.getViewHolderBackgroundColorFromInstance(context, viewHolderCount)
+        val backgroundColorForViewHolder =
+            ColorUtils.getViewHolderBackgroundColorFromInstance(context, viewHolderCount)
         viewHolder.itemView.setBackgroundColor(backgroundColorForViewHolder)
         viewHolderCount++
-        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
-                + viewHolderCount)
+        Log.d(
+            TAG, "onCreateViewHolder: number of ViewHolders created: "
+                    + viewHolderCount
+        )
         return viewHolder
     }
 
@@ -77,13 +138,12 @@ class GreenAdapter
      * indices in the list for this particular position, using the "position" argument that is conveniently
      * passed into us.
      *
-     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     * @param viewHolder   The ViewHolder which should be updated to represent the contents of the
      * item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
-    override fun onBindViewHolder(holder: NumberViewHolder, position: Int) {
-        Log.d(TAG, "#$position")
-        holder.bind(position)
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        viewHolder.bind(position)
     }
 
     /**
@@ -92,86 +152,5 @@ class GreenAdapter
      *
      * @return The number of items available in our forecast
      */
-    override fun getItemCount(): Int {
-        return mNumberItems
-    }
-
-    /**
-     * Cache of the children views for a list item.
-     */
-    inner class NumberViewHolder(itemView: View) : ViewHolder(itemView) {
-        // Will display the position in the list, ie 0 through getItemCount() - 1
-        var listItemNumberView: TextView
-        // Will display which ViewHolder is displaying this data
-        var viewHolderIndex: TextView
-
-        /**
-         * A method we wrote for convenience. This method will take an integer as input and
-         * use that integer to display the appropriate text within a list item.
-         * @param listIndex Position of the item in the list
-         */
-        fun bind(listIndex: Int) {
-            listItemNumberView.text = listIndex.toString()
-        }
-
-        /**
-         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
-         * TextViews and set an onClickListener to listen for clicks. Those will be handled in the
-         * onClick method below.
-         * @param itemView The View that you inflated in
-         * [GreenAdapter.onCreateViewHolder]
-         */
-        init {
-            listItemNumberView = itemView.findViewById(R.id.tv_item_number) as TextView
-            viewHolderIndex = itemView.findViewById(R.id.tv_view_holder_instance) as TextView
-        }
-    }
-
-    companion object {
-        private val TAG = GreenAdapter::class.java.simpleName
-        /*
-     * The number of ViewHolders that have been created. Typically, you can figure out how many
-     * there should be by determining how many list items fit on your screen at once and add 2 to 4
-     * to that number. That isn't the exact formula, but will give you an idea of how many
-     * ViewHolders have been created to display any given RecyclerView.
-     *
-     * Here's some ASCII art to hopefully help you understand:
-     *
-     *    ViewHolders on screen:
-     *
-     *        *-----------------------------*
-     *        |         ViewHolder index: 0 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 1 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 2 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 3 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 4 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 5 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 6 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 7 |
-     *        *-----------------------------*
-     *
-     *    Extra ViewHolders (off screen)
-     *
-     *        *-----------------------------*
-     *        |         ViewHolder index: 8 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 9 |
-     *        *-----------------------------*
-     *        |         ViewHolder index: 10|
-     *        *-----------------------------*
-     *        |         ViewHolder index: 11|
-     *        *-----------------------------*
-     *
-     *    Total number of ViewHolders = 11
-     */
-        private var viewHolderCount = 0
-    }
-
+    override fun getItemCount() = mNumberItems
 }
