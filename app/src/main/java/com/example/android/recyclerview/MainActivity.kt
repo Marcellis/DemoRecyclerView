@@ -19,8 +19,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android.recyclerview.databinding.ActivityMainBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 
 
 class MainActivity : AppCompatActivity() {

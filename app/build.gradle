@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -33,6 +34,7 @@ dependencies {
 
     // Material widgets.
     implementation 'com.google.android.material:material:1.4.0'
+
 }
 repositories {
     mavenCentral()
