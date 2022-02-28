@@ -17,7 +17,7 @@ package com.example.android.recyclerview
 
 import android.content.Context
 import android.graphics.Color
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 
 /**
  * ColorUtils is a class with one method, used to color the ViewHolders in
@@ -46,7 +46,7 @@ object ColorUtils {
      * @return A shade of green based off of when the calling ViewHolder
      * was created.
      */
-    fun getViewHolderBackgroundColorFromInstance(context: Context?, instanceNum: Int): Int {
+    fun getViewHolderBackgroundColorFromInstance(context: Context, instanceNum: Int): Int {
         return when (instanceNum) {
             0 -> ContextCompat.getColor(context, R.color.material50Green)
             1 -> ContextCompat.getColor(context, R.color.material100Green)
