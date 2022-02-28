@@ -16,11 +16,12 @@
 package com.example.android.recyclerview
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android.recyclerview.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
